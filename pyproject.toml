@@ -1,0 +1,8 @@
+[project]
+name = "space-survival-shooter"
+version = "0.1.0"
+description = "A reinforcement learning space survival shooter"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.2",
+]
