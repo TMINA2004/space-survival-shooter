@@ -37,3 +37,24 @@ The game logic reports what happens during each step. The RL environment calcula
 ### 5. Why do we test the walls and corners?
 
 We test the walls and corners to make sure the ship stays inside the arena. These tests help detect movement and boundary bugs before we add more game features.
+
+## Day 3 — Enemies, collisions, and difficulty
+
+### 1. Why do we use invulnerability frames?
+Invulnerability frames prevent the player from losing multiple lives in consecutive steps while overlapping with an enemy. This makes collisions fairer and gameplay more manageable.
+
+### 2. Why destroy an enemy even when the ship is invulnerable?
+Destroying the enemy prevents it from remaining on top of the ship and causing repeated collisions. It also removes the enemy from the game.
+
+### 3. Why use random seeds?
+Random seeds make experiments reproducible. Using the same seed generates the same random enemy behavior, allowing fair comparisons between different agents.
+
+### 4. Why remove enemies that leave the screen?
+Enemies that leave the screen can no longer interact with the ship. Removing them prevents the enemy list from growing indefinitely and keeps the simulation efficient.
+
+### 5. What are the baseline results?
+- **STAY:** 1,353 average survival steps.
+- **RANDOM:** 1,027 average survival steps.
+- **Simulation speed:** approximately 101,132 steps per second during the Day 3 benchmark.
+
+In this experiment, STAY performed better than RANDOM. Random movement can sometimes move the ship toward enemies instead of away from them. These results are specific to the current configuration and experiment.

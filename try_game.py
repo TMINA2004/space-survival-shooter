@@ -2,7 +2,11 @@ import time
 
 from space_shooter.game import Game, STAY, UP, DOWN, LEFT, RIGHT
 
-game = Game()
+
+from space_shooter.config import Config
+
+
+game = Game(Config(start_lives=10_000))
 print("Start position:", game.ship_x, game.ship_y)
 
 # Test 1: moving UP 10 times decreases y by 60
