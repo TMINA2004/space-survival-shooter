@@ -8,7 +8,7 @@ from space_shooter.game import (
 )
 
 # Test 1: the first enemy appears after 40 steps
-game = Game(seed=0)
+game = Game(Config(level=3), seed=0)
 for _ in range(40):
     game.step(STAY)
 

@@ -39,7 +39,7 @@ The game will be developed in Python. Pygame will be used for graphics, and Gymn
 - After taking a hit, the ship is invulnerable for 60 steps.
 - Shooting costs one ammunition unit.
 - The shooting cooldown is 8 steps.
-- Maximum ammunition is 20 units.
+- Ammo: maximum 20, a shot costs 1. +1 every 20 steps while the magazine is not full. Shooting with 0 ammo does nothing (counted as a dry fire)
 - One ammunition unit is restored every 20 steps.
 - Enemies spawn more frequently as time passes.
 - In Level 4, each new enemy has a 25% probability of being a Hunter.
@@ -47,6 +47,7 @@ The game will be developed in Python. Pygame will be used for graphics, and Gymn
 - Enemies that leave the bottom of the arena disappear without a penalty.
 - The game ends when the player has zero lives.
 - During training, an episode is truncated after 5000 steps as a technical safety limit.
+- Bullet hits are checked before ship collisions
 
 ## 5. Development levels
 
@@ -57,18 +58,12 @@ The game will be developed in Python. Pygame will be used for graphics, and Gymn
 | 3 | Limited ammunition and automatic recharge |
 | 4 | Hunter enemies and shield pickups |
 
-## 6. Action space
-
-The agent has six possible actions, represented by Discrete(6).
-
-| Action | Meaning |
-|---:|---|
-| 0 | Stay still |
-| 1 | Move up |
-| 2 | Move down |
-| 3 | Move left |
-| 4 | Move right |
-| 5 | Shoot |
+## 6. Actions (Discrete(10))
+action = move + 5 * shoot
+- move: 0 = stay, 1 = up, 2 = down, 3 = left, 4 = right
+- shoot: 0 = no, 1 = yes
+So 0-4 are moves without shooting, and 5-9 are the same moves with shooting.
+Shooting is limited by a cooldown of 8 steps.
 
 ## 7. Observation space
 
@@ -93,15 +88,16 @@ Relative positions are scaled to a small numerical range. Missing objects are re
 
 These are initial reward values and may be adjusted after testing.
 
-| Event | Reward |
-|---|---:|
-| Each step survived | +0.01 |
-| Destroy a Drifter | +1 |
-| Destroy a Hunter | +2 |
-| Lose a life | -5 |
-| Collect a shield | +0.5 |
+| Event              | Reward |
+|                    |        |
+| Each step survived | +0.01  |
+| Destroy a Drifter  | +1     |
+| Destroy a Hunter   | +2     |
+| Lose a life        | -5     |
+| Collect a shield   | +0.5   |
 
-The reward function encourages survival and destroying enemies while discouraging the loss of lives.
+The reward function encourages survival and destroying enemies while discouraging the loss of lives
+Implemented in RewardConfig (reward v1)
 
 ## 9. Episode ending
 
@@ -124,6 +120,7 @@ The environment will record:
 - Shooting accuracy.
 - Number of lives lost.
 - Number of shields collected.
+- dry fires
 
 ## 11. Planned project structure
 
@@ -134,3 +131,15 @@ The environment will record:
 - `rule_agent.py`: a simple rule-based agent.
 - `docs/game_design.md`: game design document.
 - `notes.md`: explanations and answers to the design questions.
+
+## 12 Known limitations of the state
+- The agent cannot see its own bullets in flight and cannot see the elapsed time.
+
+## 13 Reference players
+player,total_reward,survival_steps,kills,accuracy,shields_collected,dry_fires,reward_std
+STAY,-7.31,766.92,0.0,,0.04,0.0,1.91
+STAY + SHOOT,7.76,1334.44,5.52,0.13,0.2,646.24,10.54
+RANDOM,11.65,1344.82,8.88,0.16,0.32,283.3,13.67
+COLUMN SHOOTER,48.52,2631.78,20.36,0.36,0.48,39.42,29.94
+
+Game v1 frozen on Game Day 9

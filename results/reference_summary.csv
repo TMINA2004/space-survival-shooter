@@ -1,0 +1,5 @@
+player,total_reward,survival_steps,kills,accuracy,shields_collected,dry_fires,reward_std
+STAY,-7.31,766.92,0.0,,0.04,0.0,1.91
+STAY + SHOOT,7.76,1334.44,5.52,0.13,0.2,646.24,10.54
+RANDOM,11.65,1344.82,8.88,0.16,0.32,283.3,13.67
+COLUMN SHOOTER,48.52,2631.78,20.36,0.36,0.48,39.42,29.94

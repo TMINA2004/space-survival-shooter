@@ -58,3 +58,15 @@ class Config:
     @property
     def shields_enabled(self) -> bool:
         return self.level >= 4
+    
+    
+
+@dataclass
+class RewardConfig:
+    """The reward weights. Kept apart from the game rules so we can tune them freely."""
+
+    survive: float = 0.01              # every step the game is still running
+    drifter_killed: float = 1.0
+    hunter_killed: float = 2.0
+    life_lost: float = -5.0
+    shield_collected: float = 0.5

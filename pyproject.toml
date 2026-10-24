@@ -4,5 +4,18 @@ version = "0.1.0"
 description = "A reinforcement learning space survival shooter"
 requires-python = ">=3.11"
 dependencies = [
+    "gymnasium>=1.4.0",
+    "matplotlib>=3.11.2",
     "numpy>=2.2",
+    "pandas>=3.1.0",
+    "pygame>=2.6.1",
+    "stable-baselines3>=2.9.0",
+    "tensorboard>=2.21.0",
+    "torch>=2.14.1",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.4.0",
+    "jupyter>=1.1.1",
 ]
