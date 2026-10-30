@@ -3,7 +3,7 @@ import pandas as pd
 
 from .env import SpaceShooterEnv
 
-SUMMARY_COLUMNS = ["total_reward", "survival_steps", "kills", "accuracy",
+SUMMARY_COLUMNS = ["total_reward", "survival_steps","survived", "kills", "accuracy",
                    "shields_collected", "hits_blocked", "dry_fires"]
 
 
@@ -22,6 +22,7 @@ def play_episode(policy, seed, config=None):
     row = dict(info["game_stats"])
     row["total_reward"] = total_reward
     row["survival_steps"] = info["game_steps"]
+    row["survived"] = int(not terminated)     
     row["kills"] = row["drifters_killed"] + row["hunters_killed"]
     row["accuracy"] = row["shots_hit"] / row["shots_fired"] if row["shots_fired"] > 0 else np.nan
     return row

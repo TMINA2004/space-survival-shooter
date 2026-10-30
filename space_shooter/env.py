@@ -43,8 +43,9 @@ class SpaceShooterEnv(gym.Env):
         return self._observation(), {}
 
     def step(self, action):
+        had_shield = self.game.shield                  # needed for the shield reward (reward v2)
         events = self.game.step(action)
-        reward = self._reward(events)
+        reward = self._reward(events, had_shield)
 
         terminated = self.game.game_over                                   # lost all lives
         truncated = (not terminated) and self.game.steps >= self.cfg.max_episode_steps
@@ -79,13 +80,14 @@ class SpaceShooterEnv(gym.Env):
     # ------------------------------------------------------------------
     # Reward: turns the game's EVENTS into a number
     # ------------------------------------------------------------------
-    def _reward(self, events):
+    def _reward(self, events, had_shield=False):
         rw = self.rewards
         reward = rw.survive
         reward += rw.drifter_killed * events["drifters_killed"]
         reward += rw.hunter_killed * events["hunters_killed"]
         reward += rw.life_lost * events["lives_lost"]
-        reward += rw.shield_collected * events["shields_collected"]
+        if not had_shield:           # reward v2: a ring is only worth something if we had no shield
+            reward += rw.shield_collected * min(events["shields_collected"], 1)
         return float(reward)
 
     # ------------------------------------------------------------------

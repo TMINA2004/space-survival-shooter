@@ -143,3 +143,7 @@ RANDOM,11.65,1344.82,8.88,0.16,0.32,283.3,13.67
 COLUMN SHOOTER,48.52,2631.78,20.36,0.36,0.48,39.42,29.94
 
 Game v1 frozen on Game Day 9
+
+
+
+Reward v2 (Game Day 11): the shield bonus is paid only if the ship had no shield. Reason: analysis of the rule-based agent showed that collecting rings while shielded gave free reward with no benefit, which an RL agent could far
