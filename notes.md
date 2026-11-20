@@ -58,3 +58,37 @@ Enemies that leave the screen can no longer interact with the ship. Removing the
 - **Simulation speed:** approximately 101,132 steps per second during the Day 3 benchmark.
 
 In this experiment, STAY performed better than RANDOM. Random movement can sometimes move the ship toward enemies instead of away from them. These results are specific to the current configuration and experiment.
+
+## Game Day 13 — Training Report
+
+### 1. Why do we use four seed groups?
+Training, validation, development, and test use different seeds to avoid overlap. If we train on test seeds, the final evaluation becomes biased and is no longer a fair measure of generalization.
+
+### 2. Difference between final_model and best_model
+`final_model.zip` contains the model at the end of training. `best_model.zip` contains the model with the highest validation reward. The best model is selected using validation results, but the validation set contains only 10 games, so the result can be noisy.
+
+### 3. Why save run_info.json?
+It records the training settings, Python and package versions, machine information, network parameters, training duration, and number of steps. This makes the experiment reproducible.
+
+### 4. What does n-envs = 8 change?
+It runs eight game environments in parallel, allowing the agent to collect experience from several environments during training.
+
+### 5. Training speed and duration
+- Steps completed: 1,007,616
+- Training time: 12.1 minutes
+- Speed: approximately 1,386 steps/second
+
+### 6. Validation curve and baselines
+The validation reward improved during training and reached 65.8 at 1,000,000 steps. It exceeded the approximate RANDOM baseline (12) and COLUMN SHOOTER baseline (48). It remains below the approximate RULE-BASED baseline (199). The result suggests that PPO learned a useful policy, but it has not yet surpassed the rule-based agent.
+
+### 7. Final model comparison on development seeds (0–29)
+
+| Player | Mean reward |
+|---|---:|
+| STAY | -7.73 |
+| STAY + SHOOT | 5.11 |
+| RANDOM | 10.19 |
+| COLUMN SHOOTER | 34.55 |
+| PPO final_model | 70.33 |
+
+The final PPO model outperformed the reference players on these development seeds. The best validation model obtained a mean reward of 51.96 on the same development seeds.
