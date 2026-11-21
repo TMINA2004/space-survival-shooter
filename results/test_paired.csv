@@ -1,0 +1,13 @@
+player,metric,mean_difference_vs_rule_based,margin_95
+PPO (ppo_4m),total_reward,27.409,2.946
+PPO (ppo_4m),kills,30.9,2.206
+PPO (ppo_4m),survival_steps,-10.08,19.757
+PPO (ppo_4m),accuracy,0.11,0.008
+PPO (ppo_4m_s1),total_reward,-14.77,14.055
+PPO (ppo_4m_s1),kills,9.68,7.527
+PPO (ppo_4m_s1),survival_steps,-552.0,244.456
+PPO (ppo_4m_s1),accuracy,0.049,0.02
+PPO (ppo_4m_s2),total_reward,-8.403,15.326
+PPO (ppo_4m_s2),kills,13.36,8.511
+PPO (ppo_4m_s2),survival_steps,-513.34,256.828
+PPO (ppo_4m_s2),accuracy,0.066,0.022

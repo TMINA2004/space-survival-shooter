@@ -92,3 +92,75 @@ The validation reward improved during training and reached 65.8 at 1,000,000 ste
 | PPO final_model | 70.33 |
 
 The final PPO model outperformed the reference players on these development seeds. The best validation model obtained a mean reward of 51.96 on the same development seeds.
+# Game Day 16 — Three Seeds and Official Test
+
+## 1. What do the 3 seeds show that one run cannot show?
+
+The three seeds show the variability of PPO training. Seed 0 achieved a validation mean of 204.1 over the last four evaluations, seed 1 achieved 185.3, and seed 2 achieved 202.4. One run alone cannot show how consistent the learning process is.
+
+## 2. What does the grey band represent?
+
+The grey band represents the mean validation reward plus or minus one standard deviation across the three seeds. It shows how much the results vary between training runs.
+
+## 3. Why do we choose the main agent using the mean of the last 4 validation points, and never the test results?
+
+A single validation evaluation uses only 10 games and can be noisy. Averaging the last four evaluations gives a more stable estimate. We use validation to select the main agent and keep the test seeds untouched for an unbiased final evaluation.
+
+**Selected main agent: PPO (ppo_4m), seed 0.**
+
+## 4. Explain: total_reward = +27.409 ± 2.946.
+
+PPO (ppo_4m) achieved an average reward 27.409 points higher than the rule-based agent on the same test games, with a 95% margin of error of 2.946 points.
+
+## 5. What does the survival result say about the two strategies?
+
+PPO (ppo_4m) achieved a higher average reward (226.13) and more kills (130.76) than the rule-based agent (198.72 reward and 99.86 kills). However, PPO completed 49 out of 50 games, while the rule-based agent completed all 50. This suggests that PPO is more aggressive, while the rule-based strategy is more consistent in survival.
+
+## 6. What is the rule about running test.py, and why does it matter?
+
+We run test.py once using the frozen models and settings on the reserved test seeds (1000–1049). We must not use test results to tune or select the model because this would cause data leakage and make the final evaluation less reliable.
+
+## 7. Official results
+
+### OFFICIAL RESULTS — Mean over 50 test games
+
+| Player | Total reward | Survival steps | Survived | Kills | Accuracy |
+|---|---:|---:|---:|---:|---:|
+| STAY | -7.31 | 766.92 | 0% | 0.00 | N/A |
+| STAY + SHOOT | 7.76 | 1334.44 | 0% | 5.52 | 0.13 |
+| RANDOM | 11.65 | 1344.82 | 0% | 8.88 | 0.16 |
+| COLUMN SHOOTER | 48.48 | 2631.78 | 0% | 20.36 | 0.36 |
+| PPO (ppo_4m_s1) | 183.95 | 4448.00 | 58% | 109.54 | 0.61 |
+| PPO (ppo_4m_s2) | 190.32 | 4486.66 | 62% | 113.22 | 0.63 |
+| RULE-BASED | 198.72 | 5000.00 | 100% | 99.86 | 0.56 |
+| PPO (mean of 3 seeds) | 200.13 | 4641.53 | 72.67% | 117.84 | 0.64 |
+| PPO (ppo_4m) | 226.13 | 4989.92 | 98% | 130.76 | 0.67 |
+
+### Paired comparison — Each PPO seed minus RULE-BASED
+
+| Player | Metric | Mean difference | 95% margin |
+|---|---|---:|---:|
+| PPO (ppo_4m) | total_reward | +27.409 | 2.946 |
+| PPO (ppo_4m) | kills | +30.900 | 2.206 |
+| PPO (ppo_4m) | survival_steps | -10.080 | 19.757 |
+| PPO (ppo_4m) | accuracy | +0.110 | 0.008 |
+| PPO (ppo_4m_s1) | total_reward | -14.770 | 14.055 |
+| PPO (ppo_4m_s1) | kills | +9.680 | 7.527 |
+| PPO (ppo_4m_s1) | survival_steps | -552.000 | 244.456 |
+| PPO (ppo_4m_s1) | accuracy | +0.049 | 0.020 |
+| PPO (ppo_4m_s2) | total_reward | -8.403 | 15.326 |
+| PPO (ppo_4m_s2) | kills | +13.360 | 8.511 |
+| PPO (ppo_4m_s2) | survival_steps | -513.340 | 256.828 |
+| PPO (ppo_4m_s2) | accuracy | +0.066 | 0.022 |
+
+## Generated files
+
+- `results/learning_curves.png`
+- `results/seeds_summary.csv`
+- `results/test_episodes.csv`
+- `results/test_summary.csv`
+- `results/test_paired.csv`
+
+## Conclusion
+
+PPO (ppo_4m), selected using validation only, achieved the highest test reward among the evaluated agents. However, performance varies across the three PPO seeds, so reporting all three runs is important. The rule-based agent remained the most consistent in survival. The test results were obtained using the reserved test seeds without further model selection.
