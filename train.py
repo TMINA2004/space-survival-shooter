@@ -8,10 +8,16 @@ import time
 from importlib.metadata import version
 
 from stable_baselines3 import PPO
-from stable_baselines3.common.callbacks import CallbackList, CheckpointCallback
+from stable_baselines3.common.callbacks import (
+    CallbackList,
+    CheckpointCallback,
+)
 from stable_baselines3.common.env_util import make_vec_env
 
-from space_shooter.callbacks import EpisodeStatsCallback, PeriodicEvalCallback
+from space_shooter.callbacks import (
+    EpisodeStatsCallback,
+    PeriodicEvalCallback,
+)
 from space_shooter.config import Config
 from space_shooter.env import SpaceShooterEnv
 from space_shooter.network import SpaceFeaturesExtractor
@@ -34,6 +40,14 @@ def parse_args():
     p.add_argument("--batch-size", type=int, default=256)
     p.add_argument("--n-epochs", type=int, default=10)
     p.add_argument("--features-dim", type=int, default=128)
+
+    p.add_argument(
+        "--network",
+        choices=["custom", "mlp"],
+        default="custom",
+        help="custom = structured network, mlp = plain SB3 MLP",
+    )
+
     p.add_argument("--eval-every", type=int, default=100_000)
     p.add_argument("--eval-episodes", type=int, default=10)
     p.add_argument("--checkpoint-every", type=int, default=250_000)
@@ -47,7 +61,7 @@ def main():
     model_dir = os.path.join("models", args.name)
     os.makedirs(
         os.path.join(model_dir, "checkpoints"),
-        exist_ok=True
+        exist_ok=True,
     )
 
     config = Config(level=args.level)
@@ -61,19 +75,32 @@ def main():
         env_kwargs=dict(config=config),
     )
 
-    model = PPO(
-        "MlpPolicy",
-        env,
-        policy_kwargs=dict(
+    # Choose the network configuration BEFORE creating the PPO model.
+    if args.network == "custom":
+        policy_kwargs = dict(
             features_extractor_class=SpaceFeaturesExtractor,
             features_extractor_kwargs=dict(
-                features_dim=args.features_dim
+                features_dim=args.features_dim,
             ),
             net_arch=dict(
                 pi=[64],
-                vf=[64]
+                vf=[64],
             ),
-        ),
+        )
+    else:
+        # Plain MLP baseline.
+        policy_kwargs = dict(
+            net_arch=dict(
+                pi=[128, 128],
+                vf=[128, 128],
+            ),
+        )
+
+    # Create the PPO model.
+    model = PPO(
+        "MlpPolicy",
+        env,
+        policy_kwargs=policy_kwargs,
         learning_rate=args.lr,
         n_steps=args.n_steps,
         batch_size=args.batch_size,
@@ -95,14 +122,18 @@ def main():
             model_dir,
             args.eval_every,
             range(2000, 2000 + args.eval_episodes),
-            config
+            config,
         ),
 
         CheckpointCallback(
             save_freq=max(
-                args.checkpoint_every // args.n_envs, 1
+                args.checkpoint_every // args.n_envs,
+                1,
             ),
-            save_path=os.path.join(model_dir, "checkpoints"),
+            save_path=os.path.join(
+                model_dir,
+                "checkpoints",
+            ),
             name_prefix="ckpt",
         ),
     ])
@@ -114,8 +145,8 @@ def main():
         "platform": platform.platform(),
         "processor": platform.processor(),
         "packages": {
-            name: version(name)
-            for name in [
+            package: version(package)
+            for package in [
                 "torch",
                 "stable-baselines3",
                 "gymnasium",
@@ -125,7 +156,8 @@ def main():
             ]
         },
         "network_parameters": sum(
-            p.numel() for p in model.policy.parameters()
+            p.numel()
+            for p in model.policy.parameters()
         ),
     }
 
@@ -134,6 +166,10 @@ def main():
         f"{args.n_envs} parallel games, level {args.level}"
     )
     print("TensorBoard: uv run tensorboard --logdir runs")
+    print(
+        f"Network: {args.network} "
+        f"({run_info['network_parameters']:,} parameters)"
+    )
 
     start = time.time()
 
@@ -150,18 +186,22 @@ def main():
     finally:
         seconds = time.time() - start
 
-        model.save(os.path.join(model_dir, "final_model"))
+        # Save the final model.
+        model.save(
+            os.path.join(model_dir, "final_model")
+        )
 
         run_info["training_seconds"] = round(seconds)
-        run_info["steps_per_second"] = round(
-            model.num_timesteps / seconds
-        ) if seconds > 0 else 0
-
+        run_info["steps_per_second"] = (
+            round(model.num_timesteps / seconds)
+            if seconds > 0
+            else 0
+        )
         run_info["steps_done"] = model.num_timesteps
 
         with open(
             os.path.join(model_dir, "run_info.json"),
-            "w"
+            "w",
         ) as f:
             json.dump(run_info, f, indent=2)
 
