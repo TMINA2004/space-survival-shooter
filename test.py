@@ -19,9 +19,9 @@ from space_shooter.rl_player import RLPlayer
 from space_shooter.rule_agent import RuleBasedAgent
 
 DEFAULT_MODELS = [
-    "models/ppo_4m/final_model.zip",
-    "models/ppo_4m_s1/final_model.zip",
-    "models/ppo_4m_s2/final_model.zip",
+    "final_models/ppo_4m/final_model.zip",
+    "final_models/ppo_4m_s1/final_model.zip",
+    "final_models/ppo_4m_s2/final_model.zip",
 ]
 
 

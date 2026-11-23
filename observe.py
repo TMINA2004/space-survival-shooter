@@ -14,7 +14,7 @@ from space_shooter.rule_agent import RuleBasedAgent
 def parse_args():
     p = argparse.ArgumentParser(description="Watch ONE episode played by an agent.")
     p.add_argument("--agent", choices=["rl", "rule", "column", "random"], default="rl")
-    p.add_argument("--model", default="models/ppo_v1/final_model.zip",
+    p.add_argument("--model", default="final_models/ppo_4m/final_model.zip",
                    help="saved RL model (used with --agent rl)")
     p.add_argument("--seed", type=int, default=7, help="seed of the game")
     p.add_argument("--level", type=int, default=4, help="game level (1-4)")
